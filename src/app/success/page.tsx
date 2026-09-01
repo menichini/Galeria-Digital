@@ -36,38 +36,25 @@ export default function SuccessPage() {
   };
 
   return (
-    <main style={{ padding: '2rem', textAlign: 'center' }}>
-      <h1>✅ Foto enviada com sucesso!</h1>
+    <main style={{ padding: '2rem', textAlign: 'center', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+      <h1 style={{ color: 'var(--color-primary)', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>🎉 Ficou Demais!</h1>
+      <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>Sua foto já está salva no Mural da Fazendinha.</p>
+      
       {url && (
-        <div style={{ marginTop: '1rem' }}>
-          <img src={url} alt="Foto enviada" style={{ maxWidth: '100%', height: 'auto' }} />
-          <div style={{ marginTop: '1rem' }}>
-            <button
-              onClick={handleDownload}
-              style={{
-                background: 'linear-gradient(135deg, #56ab2f, #a8e063)',
-                color: '#fff',
-                border: 'none',
-                padding: '0.6rem 1.2rem',
-                marginRight: '0.5rem',
-                borderRadius: '6px',
-                cursor: 'pointer',
-              }}
-            >
-              Baixar
+        <div className="glass-card" style={{ padding: '1rem', width: '100%', maxWidth: '400px' }}>
+          <div style={{ position: 'relative', width: '100%', aspectRatio: '3/4', borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '4px solid white', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}>
+             <img src={url} alt="Foto final" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+          
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', flexDirection: 'column' }}>
+            <button onClick={handleDownload} className="btn btn-primary">
+              ↓ Baixar Foto
             </button>
-            <button
-              onClick={handleShare}
-              style={{
-                background: 'linear-gradient(135deg, #36d1dc, #5b86e5)',
-                color: '#fff',
-                border: 'none',
-                padding: '0.6rem 1.2rem',
-                borderRadius: '6px',
-                cursor: 'pointer',
-              }}
-            >
-              Compartilhar
+            <button onClick={handleShare} className="btn btn-secondary">
+              ➦ Compartilhar
+            </button>
+            <button onClick={() => router.push('/gallery')} className="btn" style={{ backgroundColor: 'transparent', border: '1px solid var(--color-primary)', color: 'var(--color-primary)' }}>
+              🖼️ Ver Mural
             </button>
           </div>
         </div>

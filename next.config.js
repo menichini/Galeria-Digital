@@ -1,4 +1,14 @@
 module.exports = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
   async headers() {
     const isDev = process.env.NODE_ENV !== 'production';
     return [

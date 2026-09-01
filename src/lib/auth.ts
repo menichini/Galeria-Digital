@@ -1,5 +1,5 @@
-export const ADMIN_USERNAME = 'admin';
-export const ADMIN_PASSWORD = 'senha123';
+export const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
+export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'senha123';
 
 /**
  * Simple client‑side check for admin credentials.

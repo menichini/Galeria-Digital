@@ -1,9 +1,10 @@
 import './globals.css';
 import React from 'react';
-import { Outfit, Inter } from 'next/font/google';
+import { Outfit, Inter, Pacifico } from 'next/font/google';
 
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const pacifico = Pacifico({ weight: '400', subsets: ['latin'], variable: '--font-pacifico' });
 
 export const metadata = {
   title: 'Fazendinha do Martin',
@@ -17,7 +18,7 @@ type RootLayoutProps = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.variable} ${outfit.variable}`}>
+      <body className={`${inter.variable} ${outfit.variable} ${pacifico.variable}`}>
         {/* We removed the ugly nav to allow a clean full-screen mobile experience */}
         <div className="app-container">
           {children}

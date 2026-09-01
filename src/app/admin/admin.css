@@ -1,61 +1,154 @@
 /* src/app/admin/admin.css */
 .admin-container {
   padding: 2rem;
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  background-color: var(--color-background);
   min-height: 100vh;
-  color: #e0e0e0;
-  font-family: 'Inter', sans-serif;
+  color: var(--color-text);
+  font-family: var(--font-primary), sans-serif;
 }
 
-.admin-container h1 {
-  margin-bottom: 1.5rem;
-  text-align: center;
+.admin-header {
+  margin-bottom: 3rem;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(0,0,0,0.05);
+}
+
+.header-top h1 {
+  color: var(--color-primary);
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  margin: 0;
+}
+
+.qr-btn {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(86, 171, 47, 0.3);
+}
+
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-box {
+  background: white;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px;
+}
+
+.stat-value {
   font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text);
 }
 
-.grid {
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-approved .stat-value { color: #56ab2f; }
+.stat-rejected .stat-value { color: #dc3545; }
+
+.admin-grid {
   display: grid;
   gap: 1.5rem;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 }
 
-.card {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 0.5rem;
-  text-align: center;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-}
-
-.photo {
+.admin-card {
+  background: white;
   border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: opacity 0.3s ease;
+}
+
+.admin-card.rejected {
+  opacity: 0.6;
+  background: #f8d7da;
+}
+
+.photo-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #eee;
+}
+
+.photo-wrapper .photo {
   object-fit: cover;
 }
 
-.filename {
-  margin: 0.5rem 0;
-  font-size: 0.9rem;
-  color: #c0c0c0;
-  word-break: break-all;
+.rejected-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(220, 53, 69, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: 900;
+  font-size: 2rem;
+  letter-spacing: 4px;
+  transform: rotate(-15deg);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  pointer-events: none;
 }
 
-.delete-btn {
-  background: #ff4d4f;
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.card-actions .filename {
+  font-size: 0.85rem;
+  color: #666;
+  text-align: center;
+  margin: 0;
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
   border: none;
-  color: #fff;
-  padding: 0.4rem 0.8rem;
+  padding: 0.75rem;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-weight: bold;
 }
 
-.delete-btn:hover {
-  background: #ff7875;
+.btn-success {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
 }

@@ -6,6 +6,7 @@ import Image from 'next/image';
 const frameFiles = [
   // Arquivos de moldura presentes em public/frames
   'frame1.png',
+  'frame_martin.jpg',
 ];
 
 /**

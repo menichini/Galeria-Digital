@@ -1,46 +1,52 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { validateAdminCredentials } from "@/lib/auth";
-import { signAdminToken } from "@/lib/jwt";
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateAdminCredentials(username, password)) {
-  // Generate JWT token and store it
-  if (typeof window !== "undefined") {
-    const token = signAdminToken();
-    sessionStorage.setItem("adminToken", token);
-  }
-  // Redirect to admin dashboard
-  router.push("/admin");
-      // Store admin flag in sessionStorage
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem("isAdmin", "true");
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (res.ok) {
+        // Redireciona para o painel de admin
+        router.push("/admin");
+      } else {
+        const data = await res.json();
+        setError(data.error || "Credenciais inválidas. Tente novamente.");
       }
-      // Redirect to admin dashboard
-      router.push("/admin");
-    } else {
-      setError("Credenciais inválidas. Tente novamente.");
+    } catch (err) {
+      setError("Falha na comunicação com o servidor.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="login-container">
-      <h1>Login Admin</h1>
-      <form onSubmit={handleSubmit} className="login-form">
+    <div className="login-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--color-background)', fontFamily: 'var(--font-primary)' }}>
+      <h1 style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-heading)', marginBottom: '2rem' }}>Acesso Restrito</h1>
+      
+      <form onSubmit={handleSubmit} className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '320px', padding: '2rem' }}>
         <input
           type="text"
           placeholder="Usuário"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
+          style={{ padding: '0.75rem', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem' }}
         />
         <input
           type="password"
@@ -48,9 +54,12 @@ export default function AdminLoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          style={{ padding: '0.75rem', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem' }}
         />
-        {error && <p className="error-msg">{error}</p>}
-        <button type="submit">Entrar</button>
+        {error && <p style={{ color: 'red', fontSize: '0.85rem', margin: 0, textAlign: 'center' }}>{error}</p>}
+        <button type="submit" className="btn btn-primary" disabled={loading} style={{ marginTop: '1rem' }}>
+          {loading ? 'Autenticando...' : 'Entrar no Painel'}
+        </button>
       </form>
     </div>
   );

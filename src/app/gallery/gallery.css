@@ -1,47 +1,79 @@
 /* src/app/gallery/gallery.css */
 .gallery-container {
   padding: 2rem;
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  background-color: var(--color-background);
   min-height: 100vh;
-  color: #e0e0e0;
-  font-family: 'Inter', sans-serif;
+  color: var(--color-text);
+  font-family: var(--font-primary), sans-serif;
 }
 
-.gallery-container h1 {
-  margin-bottom: 1.5rem;
+.gallery-title {
+  margin-bottom: 2rem;
   text-align: center;
-  font-size: 2rem;
+  font-size: 2.5rem;
+  color: var(--color-primary);
+  font-family: var(--font-heading), sans-serif;
 }
 
 .grid {
   display: grid;
-  gap: 1.5rem;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  padding: 1rem;
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 0.5rem;
+  background: white;
+  border-radius: 4px;
+  padding: 0.75rem 0.75rem 3rem 0.75rem; /* Polaroid effect */
   text-align: center;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  cursor: pointer;
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  transform: scale(1.05) rotate(-2deg);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.photo-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  border: 1px solid #eee;
+  background: #f9f9f9;
 }
 
 .photo {
-  border-radius: 8px;
   object-fit: cover;
 }
 
-.filename {
-  margin: 0.5rem 0;
-  font-size: 0.9rem;
-  color: #c0c0c0;
-  word-break: break-all;
+/* Efeito de fita adesiva */
+.card::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 40px;
+  height: 15px;
+  background: rgba(255, 235, 150, 0.6); /* Tape */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transform: translateX(-50%) rotate(-3deg);
+  z-index: 2;
+}
+
+.photo-date {
+  position: absolute;
+  bottom: 0.8rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
 }

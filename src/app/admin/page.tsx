@@ -1,13 +1,15 @@
 "use client";
 import './admin.css';
-
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface FileItem {
+  id: string;
   name: string;
   url: string;
+  isApproved: boolean;
+  createdAt: string;
 }
 
 export default function AdminPage() {
@@ -15,22 +17,13 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Guard: ensure admin flag is set
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const isAdmin = sessionStorage.getItem("isAdmin");
-      if (!isAdmin) {
-        router.replace("/admin/login");
-      }
-    }
-  }, []);
-
   const fetchFiles = async () => {
     try {
-      const token = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') : null;
-      const res = await fetch('/api/admin/list', {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const res = await fetch('/api/admin/list');
+      if (res.status === 401) {
+        router.replace('/admin/login');
+        return;
+      }
       const data = await res.json();
       setFiles(data.files || []);
     } catch (e) {
@@ -44,42 +37,93 @@ export default function AdminPage() {
     fetchFiles();
   }, []);
 
-  const handleDelete = async (fileName: string) => {
-    if (!confirm(`Excluir "${fileName}"?`)) return;
+  const handleToggle = async (id: string, currentStatus: boolean) => {
     try {
-      const token = typeof window !== 'undefined' ? sessionStorage.getItem('adminToken') : null;
-      const res = await fetch(`/api/admin/delete?file=${encodeURIComponent(fileName)}`, {
-        method: 'DELETE',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      const newStatus = !currentStatus;
+      
+      // Optimistic update
+      setFiles(prev => prev.map(f => f.id === id ? { ...f, isApproved: newStatus } : f));
+      
+      const res = await fetch(`/api/admin/toggle-status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, isApproved: newStatus })
       });
-      if (res.ok) {
-        // Refresh list
+      
+      if (!res.ok) {
+        // Revert on failure
         fetchFiles();
-      } else {
-        const err = await res.json();
-        alert(`Erro ao excluir: ${err.error}`);
+        alert('Erro ao atualizar status da foto.');
       }
     } catch (e) {
       console.error(e);
     }
   };
 
-  if (loading) return <p>Carregando...</p>;
+  if (loading) return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'var(--color-background)' }}>
+      <h2>Carregando Painel...</h2>
+    </div>
+  );
+
+  const totalPhotos = files.length;
+  const approvedPhotos = files.filter(f => f.isApproved).length;
+  const rejectedPhotos = totalPhotos - approvedPhotos;
 
   return (
     <div className="admin-container">
-      <h1>Administração de Fotos</h1>
+      <header className="admin-header">
+        <div className="header-top">
+          <h1>Painel de Moderação</h1>
+          <button 
+            className="btn btn-primary qr-btn"
+            onClick={() => router.push('/admin/qr')}
+          >
+            🖨️ Gerar QR Code
+          </button>
+        </div>
+        
+        <div className="stats-bar">
+          <div className="stat-box">
+            <span className="stat-value">{totalPhotos}</span>
+            <span className="stat-label">Total de Fotos</span>
+          </div>
+          <div className="stat-box stat-approved">
+            <span className="stat-value">{approvedPhotos}</span>
+            <span className="stat-label">Aprovadas</span>
+          </div>
+          <div className="stat-box stat-rejected">
+            <span className="stat-value">{rejectedPhotos}</span>
+            <span className="stat-label">Ocultas</span>
+          </div>
+        </div>
+      </header>
+
       {files.length === 0 ? (
-        <p>Nenhuma foto encontrada.</p>
+        <div className="glass-card" style={{ padding: '2rem', textAlign: 'center' }}>
+          <p>Nenhuma foto foi enviada ainda.</p>
+        </div>
       ) : (
-        <div className="grid">
+        <div className="admin-grid">
           {files.map((file) => (
-            <div key={file.name} className="card">
-              <Image src={file.url} alt={file.name} width={200} height={200} className="photo" />
-              <p className="filename">{file.name}</p>
-              <button className="delete-btn" onClick={() => handleDelete(file.name)}>
-                🗑️ Excluir
-              </button>
+            <div key={file.id} className={`admin-card ${!file.isApproved ? 'rejected' : ''}`}>
+              <div className="photo-wrapper">
+                <Image src={file.url} alt={file.name} fill className="photo" />
+                {!file.isApproved && (
+                  <div className="rejected-overlay">
+                    <span>OCULTA</span>
+                  </div>
+                )}
+              </div>
+              <div className="card-actions">
+                <p className="filename">{new Date(file.createdAt).toLocaleTimeString('pt-BR')} - {new Date(file.createdAt).toLocaleDateString('pt-BR')}</p>
+                <button 
+                  className={`btn ${file.isApproved ? 'btn-danger' : 'btn-success'}`} 
+                  onClick={() => handleToggle(file.id, file.isApproved)}
+                >
+                  {file.isApproved ? '🚫 Ocultar' : '✅ Aprovar'}
+                </button>
+              </div>
             </div>
           ))}
         </div>
