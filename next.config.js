@@ -23,16 +23,4 @@ module.exports = {
       },
     ];
   },
-  // Force HTTPS redirects (only in production)
-  async redirects() {
-    return process.env.NODE_ENV === 'production'
-      ? [
-          {
-            source: '/(.*)',
-            destination: 'https://%{host}/$1',
-            permanent: true,
-          },
-        ]
-      : [];
-  },
 };
