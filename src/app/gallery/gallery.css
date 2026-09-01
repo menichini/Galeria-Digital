@@ -1,0 +1,47 @@
+/* src/app/gallery/gallery.css */
+.gallery-container {
+  padding: 2rem;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  min-height: 100vh;
+  color: #e0e0e0;
+  font-family: 'Inter', sans-serif;
+}
+
+.gallery-container h1 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.5rem;
+  text-align: center;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+}
+
+.photo {
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.filename {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  color: #c0c0c0;
+  word-break: break-all;
+}

@@ -1,12 +1,113 @@
 /* globals.css */
+:root {
+  /* Cores Temáticas da Fazendinha */
+  --color-brand-primary: #558B2F; /* Verde Fazenda */
+  --color-brand-secondary: #EF6C00; /* Laranja Abóbora */
+  --color-brand-accent: #FFD54F; /* Amarelo Sol */
+  --color-bg-light: #F9FBE7; /* Creme esverdeado claro */
+  --color-bg-card: #FFFFFF;
+  --color-text-main: #3E2723; /* Marrom escuro */
+  --color-text-muted: #795548; /* Marrom médio */
+
+  /* Espaçamentos e Bordas */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
+  
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+}
+
 html, body {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: system-ui, sans-serif;
-  background: #fafafa;
-  color: #111;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  background-color: var(--color-bg-light);
+  color: var(--color-text-main);
+  /* Previne pull-to-refresh no mobile (iOS/Android) */
+  overscroll-behavior-y: none; 
 }
+
 *, *::before, *::after {
   box-sizing: inherit;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-outfit), sans-serif;
+  font-weight: 700;
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--color-brand-primary);
+}
+
+.app-container {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-md);
+  max-width: 500px;
+  margin: 0 auto; /* Centraliza no desktop */
+}
+
+/* Base Components */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  padding: var(--spacing-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+}
+
+/* Botões */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-outfit), sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-pill);
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  width: 100%; /* Mobile first */
+  margin-bottom: var(--spacing-sm);
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+.btn-primary {
+  background-color: var(--color-brand-primary);
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(85, 139, 47, 0.3);
+}
+
+.btn-secondary {
+  background-color: var(--color-brand-secondary);
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(239, 108, 0, 0.3);
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: var(--color-text-muted);
+  border: 2px solid var(--color-text-muted);
+}
+
+/* Animations */
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: slideUpFade 0.5s ease-out forwards;
 }
