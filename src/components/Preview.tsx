@@ -18,11 +18,20 @@ export const Preview: React.FC<{
   const isDragging = useRef(false);
   const lastPos = useRef({ x: 0, y: 0 });
 
+  const [photoSize, setPhotoSize] = useState({ width: 0, height: 0 });
+  const [containerSize, setContainerSize] = useState({ width: 300, height: 400 });
+
   useEffect(() => {
     const captured = sessionStorage.getItem('capturedImage') || '';
     const chosen = sessionStorage.getItem('selectedFrame') || '';
     setPhoto(captured);
     setFrame(chosen);
+
+    if (captured) {
+      const pImg = new window.Image();
+      pImg.onload = () => setPhotoSize({ width: pImg.width, height: pImg.height });
+      pImg.src = captured;
+    }
 
     if (chosen) {
       const img = new window.Image();
@@ -35,9 +44,38 @@ export const Preview: React.FC<{
     }
   }, []);
 
+  useEffect(() => {
+    if (containerRef.current) {
+      const updateSize = () => {
+        if (containerRef.current) {
+          setContainerSize({
+            width: containerRef.current.clientWidth,
+            height: containerRef.current.clientHeight
+          });
+        }
+      };
+      updateSize();
+      window.addEventListener('resize', updateSize);
+      return () => window.removeEventListener('resize', updateSize);
+    }
+  }, [frameRatio, photo]);
+
   if (!photo) {
     return <p>Imagem não encontrada. Volte à captura.</p>;
   }
+
+  // Calculate base scale so image covers container
+  const isRotated90 = rotation === 90 || rotation === 270;
+  const effectivePhotoWidth = isRotated90 ? photoSize.height : photoSize.width;
+  const effectivePhotoHeight = isRotated90 ? photoSize.width : photoSize.height;
+
+  let baseScale = 1;
+  if (effectivePhotoWidth > 0 && effectivePhotoHeight > 0) {
+    baseScale = Math.max(containerSize.width / effectivePhotoWidth, containerSize.height / effectivePhotoHeight);
+  }
+
+  const renderedWidth = photoSize.width * baseScale;
+  const renderedHeight = photoSize.height * baseScale;
 
   const handleStart = (clientX: number, clientY: number) => {
     if (isUploading) return;
@@ -64,9 +102,8 @@ export const Preview: React.FC<{
 
   const handleConfirm = () => {
     if (isUploading) return;
-    const container = containerRef.current;
-    const pw = container ? container.clientWidth : 300;
-    const ph = container ? container.clientHeight : 400;
+    const pw = containerSize.width || 300;
+    const ph = containerSize.height || 400;
     
     onConfirm({
       zoom,
@@ -124,23 +161,26 @@ export const Preview: React.FC<{
           opacity: isUploading ? 0.7 : 1
         }}
       >
-        <img
-          src={photo}
-          alt="Foto"
-          draggable={false}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            zIndex: 1,
-            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom}) rotate(${rotation}deg)`,
-            transformOrigin: 'center',
-            filter: getCssFilter(),
-            pointerEvents: 'none' 
-          }}
-        />
+        {photoSize.width > 0 && (
+          <img
+            src={photo}
+            alt="Foto"
+            draggable={false}
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              width: renderedWidth,
+              height: renderedHeight,
+              marginLeft: -renderedWidth / 2,
+              marginTop: -renderedHeight / 2,
+              zIndex: 1,
+              transform: `translate(${pan.x}px, ${pan.y}px) rotate(${rotation}deg) scale(${zoom})`,
+              filter: getCssFilter(),
+              pointerEvents: 'none' 
+            }}
+          />
+        )}
 
         {frame && (
           <img
@@ -180,8 +220,8 @@ export const Preview: React.FC<{
         <label style={{ fontSize: '0.9rem', fontWeight: 600 }}>Zoom</label>
         <input 
           type="range" 
-          min="0.5" 
-          max="3" 
+          min="1" 
+          max="4" 
           step="0.05" 
           value={zoom} 
           onChange={e => setZoom(parseFloat(e.target.value))}
