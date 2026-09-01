@@ -4,8 +4,7 @@ import Image from 'next/image';
 // Static list of frame image filenames placed in public/frames.
 // Add new filenames here when you add new frames.
 const frameFiles = [
-  // Arquivos de moldura presentes em public/frames
-  'frame1.png',
+  // Arquivo de moldura presente em public/frames
   'frame_martin.jpg',
 ];
 

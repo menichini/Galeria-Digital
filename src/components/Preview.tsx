@@ -69,9 +69,12 @@ export const Preview: React.FC<{
   const effectivePhotoWidth = isRotated90 ? photoSize.height : photoSize.width;
   const effectivePhotoHeight = isRotated90 ? photoSize.width : photoSize.height;
 
+  const holeWidth = containerSize.width * 0.7989;
+  const holeHeight = containerSize.height * 0.6611;
+
   let baseScale = 1;
   if (effectivePhotoWidth > 0 && effectivePhotoHeight > 0) {
-    baseScale = Math.max(containerSize.width / effectivePhotoWidth, containerSize.height / effectivePhotoHeight);
+    baseScale = Math.max(holeWidth / effectivePhotoWidth, holeHeight / effectivePhotoHeight);
   }
 
   const renderedWidth = photoSize.width * baseScale;
@@ -161,26 +164,33 @@ export const Preview: React.FC<{
           opacity: isUploading ? 0.7 : 1
         }}
       >
-        {photoSize.width > 0 && (
-          <img
-            src={photo}
-            alt="Foto"
-            draggable={false}
-            style={{
-              position: 'absolute',
-              left: '50%',
-              top: '50%',
-              width: renderedWidth,
-              height: renderedHeight,
-              marginLeft: -renderedWidth / 2,
-              marginTop: -renderedHeight / 2,
-              zIndex: 1,
-              transform: `translate(${pan.x}px, ${pan.y}px) rotate(${rotation}deg) scale(${zoom})`,
-              filter: getCssFilter(),
-              pointerEvents: 'none' 
-            }}
-          />
-        )}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 1,
+          clipPath: 'polygon(10.06% 21.09%, 89.94% 21.09%, 89.94% 87.20%, 10.06% 87.20%)'
+        }}>
+          {photoSize.width > 0 && (
+            <img
+              src={photo}
+              alt="Foto"
+              draggable={false}
+              style={{
+                position: 'absolute',
+                left: '50%',
+                top: '54.145%',
+                width: renderedWidth,
+                height: renderedHeight,
+                marginLeft: -renderedWidth / 2,
+                marginTop: -renderedHeight / 2,
+                zIndex: 1,
+                transform: `translate(${pan.x}px, ${pan.y}px) rotate(${rotation}deg) scale(${zoom})`,
+                filter: getCssFilter(),
+                pointerEvents: 'none' 
+              }}
+            />
+          )}
+        </div>
 
         {frame && (
           <img

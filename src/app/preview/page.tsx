@@ -55,17 +55,30 @@ export default function PreviewPage() {
         const effectivePhotoWidth = isRotated90 ? photoImg.height : photoImg.width;
         const effectivePhotoHeight = isRotated90 ? photoImg.width : photoImg.height;
 
-        const baseScale = Math.max(canvas.width / effectivePhotoWidth, canvas.height / effectivePhotoHeight);
+        const holeWidth = canvas.width * 0.7989;
+        const holeHeight = canvas.height * 0.6611;
+        const baseScale = Math.max(holeWidth / effectivePhotoWidth, holeHeight / effectivePhotoHeight);
         const finalScale = baseScale * adjustments.zoom;
         
         const baseCenterX = canvas.width / 2;
-        const baseCenterY = canvas.height / 2;
+        const baseCenterY = canvas.height * 0.54145;
         
         const panOffsetX = adjustments.panRatioX * canvas.width;
         const panOffsetY = adjustments.panRatioY * canvas.height;
 
-        // Desenha a foto com offset e rotação
+        // Desenha a foto com offset e rotação limitados ao quadrado branco
         ctx.save();
+        
+        // Aplica o clip (máscara) exatamente na área branca da moldura
+        ctx.beginPath();
+        ctx.rect(
+          canvas.width * 0.1006, 
+          canvas.height * 0.2109, 
+          canvas.width * 0.7989, 
+          canvas.height * 0.6611
+        );
+        ctx.clip();
+
         ctx.translate(baseCenterX + panOffsetX, baseCenterY + panOffsetY);
         ctx.rotate((adjustments.rotation * Math.PI) / 180);
         ctx.drawImage(
