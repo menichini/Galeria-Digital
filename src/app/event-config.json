@@ -1,0 +1,12 @@
+{
+  "title": "Fazendinha do Martin",
+  "description": "Galeria digital para o aniversário de 2 anos do Martin",
+  "url": "https://example.com/event",
+  "frames": [
+    {
+      "id": "frame1",
+      "src": "/frames/frame1.png",
+      "label": "Cow Frame"
+    }
+  ]
+}

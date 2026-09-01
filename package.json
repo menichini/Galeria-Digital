@@ -22,6 +22,6 @@
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "eslint-plugin-react": "^7.34.0",
     "prettier": "3.2.5",
-    "typescript": "5.4.2"
+    "@supabase/supabase-js": "^2.39.4",
   }
 }
