@@ -7,11 +7,11 @@ export interface TransformState {
   rotation: number;
 }
 
-export interface SafeArea {
-  top: number;
-  right: number;
-  bottom: number;
-  left: number;
+export interface CropArea {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
 export function usePhotoTransform(
@@ -19,12 +19,12 @@ export function usePhotoTransform(
   photoHeight: number,
   containerWidth: number,
   containerHeight: number,
-  safeArea: SafeArea
+  cropArea: CropArea
 ) {
   const [transform, setTransform] = useState<TransformState>({ x: 0, y: 0, scale: 1, rotation: 0 });
 
-  const safeWidth = containerWidth * (safeArea.right - safeArea.left);
-  const safeHeight = containerHeight * (safeArea.bottom - safeArea.top);
+  const safeWidth = containerWidth * cropArea.width;
+  const safeHeight = containerHeight * cropArea.height;
 
   const absRot = Math.abs(transform.rotation) % 360;
   const isRotated90 = (absRot > 45 && absRot <= 135) || (absRot > 225 && absRot <= 315);

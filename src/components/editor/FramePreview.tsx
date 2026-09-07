@@ -1,14 +1,15 @@
 import React, { useRef, useEffect } from 'react';
 import { useGesture } from '@use-gesture/react';
 import { useSpring, animated } from '@react-spring/web';
-import { TransformState, SafeArea } from '../../hooks/usePhotoTransform';
+import { TransformState, CropArea } from '../../hooks/usePhotoTransform';
 
-interface FramePreviewProps {
+export interface FramePreviewProps {
   photoSrc: string;
   frameSrc: string;
   transform: TransformState;
   onTransformChange: (t: TransformState) => void;
-  safeArea: SafeArea;
+  cropArea: CropArea;
+  frameAspectRatio: number;
   onPhotoLoad: (width: number, height: number) => void;
   onContainerResize: (width: number, height: number) => void;
 }
@@ -18,7 +19,8 @@ export const FramePreview: React.FC<FramePreviewProps> = ({
   frameSrc,
   transform,
   onTransformChange,
-  safeArea,
+  cropArea,
+  frameAspectRatio,
   onPhotoLoad,
   onContainerResize
 }) => {
@@ -75,7 +77,7 @@ export const FramePreview: React.FC<FramePreviewProps> = ({
       style={{
         position: 'relative',
         width: '100%',
-        aspectRatio: '3/4', 
+        aspectRatio: frameAspectRatio, 
         backgroundColor: '#e0e0e0',
         borderRadius: 'var(--radius-md)',
         overflow: 'hidden',
@@ -86,10 +88,10 @@ export const FramePreview: React.FC<FramePreviewProps> = ({
       {/* Mask area matching safe area */}
       <div style={{
         position: 'absolute',
-        top: `${safeArea.top * 100}%`,
-        left: `${safeArea.left * 100}%`,
-        right: `${(1 - safeArea.right) * 100}%`,
-        bottom: `${(1 - safeArea.bottom) * 100}%`,
+        top: `${cropArea.y * 100}%`,
+        left: `${cropArea.x * 100}%`,
+        width: `${cropArea.width * 100}%`,
+        height: `${cropArea.height * 100}%`,
         overflow: 'hidden',
         zIndex: 1,
         pointerEvents: 'none'
@@ -128,6 +130,7 @@ export const FramePreview: React.FC<FramePreviewProps> = ({
           objectFit: 'fill',
           zIndex: 2,
           pointerEvents: 'none',
+          mixBlendMode: (frameSrc.endsWith('.jpg') || frameSrc.endsWith('.jpeg')) ? 'multiply' : 'normal'
         }}
       />
     </div>

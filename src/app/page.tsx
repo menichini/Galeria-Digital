@@ -8,7 +8,7 @@ export default function Home() {
         style={{
           width: '100%',
           height: '250px',
-          backgroundImage: 'url(/frame.jpeg)',
+          backgroundImage: 'url(/farm-hero2.jpeg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           borderRadius: '0 0 var(--radius-lg) var(--radius-lg)',
