@@ -6,6 +6,7 @@ import Image from 'next/image';
 export default function SuccessPage() {
   const router = useRouter();
   const [url, setUrl] = useState<string>('');
+  const [shareState, setShareState] = useState<'idle' | 'preparing' | 'sharing'>('idle');
 
   useEffect(() => {
     const uploaded = sessionStorage.getItem('uploadedUrl') || '';
@@ -20,19 +21,66 @@ export default function SuccessPage() {
   const handleDownload = () => {
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'foto_fazendinha.png';
+    a.download = `fazendinha-martin-2-anos-${Date.now()}.jpg`;
     a.click();
   };
 
   const handleShare = async () => {
-    if (navigator.share) {
+    if (shareState !== 'idle') return;
+
+    if (!navigator.share) {
+      // Fallback 3: Se não suporta Share API, faz download
+      handleDownload();
+      return;
+    }
+
+    try {
+      setShareState('preparing');
+      
+      const title = 'Fazendinha do Martin — 2 anos';
+      const text = 'Olha essa lembrança da Fazendinha do Martin! 🎉';
+      
+      let file: File | null = null;
+      let canShareFile = false;
+
       try {
-        await navigator.share({ title: 'Foto da festa', url });
-      } catch (e) {
-        console.error('Share failed', e);
+        const response = await fetch(url);
+        const blob = await response.blob();
+        file = new File([blob], `fazendinha-martin-2-anos-${Date.now()}.jpg`, { type: blob.type || 'image/jpeg' });
+        
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          canShareFile = true;
+        }
+      } catch (err) {
+        console.warn('Não foi possível preparar o arquivo para compartilhamento', err);
       }
-    } else {
-      alert('Compartilhamento não suportado neste navegador.');
+
+      setShareState('sharing');
+
+      if (canShareFile && file) {
+        // Fallback 1: Share arquivo
+        await navigator.share({
+          title,
+          text,
+          files: [file],
+        });
+      } else {
+        // Fallback 2: Share URL
+        await navigator.share({
+          title,
+          text,
+          url,
+        });
+      }
+
+      setShareState('idle');
+    } catch (e: any) {
+      setShareState('idle');
+      // AbortError é lançado quando o usuário fecha o share sheet nativo
+      if (e.name !== 'AbortError') {
+        console.warn('Erro ao compartilhar', e);
+        // Não mostrar erro técnico em tela
+      }
     }
   };
 
@@ -41,6 +89,8 @@ export default function SuccessPage() {
     sessionStorage.removeItem('uploadedUrl');
     router.push('/capture');
   };
+
+  const isShareSupported = typeof navigator !== 'undefined' && !!navigator.share;
 
   return (
     <main className="animate-in flex flex-col items-center justify-center min-h-screen px-4 py-12 w-full">
@@ -67,18 +117,28 @@ export default function SuccessPage() {
               📸 Tirar outra foto
             </button>
 
+            {isShareSupported && (
+              <button 
+                onClick={handleShare} 
+                disabled={shareState !== 'idle'}
+                className="w-full py-4 text-lg font-display font-semibold text-white bg-brand-secondary rounded-full shadow-[0_4px_14px_rgba(239,108,0,0.3)] transition-all duration-200 hover:brightness-110 active:scale-95 disabled:opacity-70 disabled:active:scale-100 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-secondary/50 flex items-center justify-center gap-2"
+              >
+                {shareState === 'preparing' ? '⏳ Preparando sua foto...' : shareState === 'sharing' ? '📤 Compartilhando...' : '📤 Compartilhar minha foto'}
+              </button>
+            )}
+
             <button 
-              onClick={() => { window.location.href = '/gallery'; }} 
+              onClick={() => { router.push('/gallery'); }} 
               className="w-full py-4 text-lg font-display font-semibold text-brand-primary bg-white border-2 border-brand-primary/20 rounded-full transition-all duration-200 hover:bg-brand-primary/5 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-primary/50 flex items-center justify-center gap-2"
             >
-              🖼️ Ver Mural
+              🖼️ Ver no Mural
             </button>
 
             <button 
-              onClick={handleShare} 
+              onClick={handleDownload} 
               className="w-full py-3 text-base font-medium text-text-muted hover:text-text-main underline decoration-text-muted/30 underline-offset-4 transition-colors flex items-center justify-center gap-2"
             >
-              ➦ Compartilhar
+              ⬇️ Baixar foto
             </button>
           </div>
         </div>
