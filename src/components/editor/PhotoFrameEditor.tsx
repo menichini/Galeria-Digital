@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FramePreview } from './FramePreview';
 import { PhotoControls } from './PhotoControls';
 import { usePhotoTransform } from '../../hooks/usePhotoTransform';
-import { FRAMES, FrameConfig } from '../../config/frames';
+import { DEFAULT_EVENT_FRAME, FrameConfig } from '../../config/frames';
 
 interface PhotoFrameEditorProps {
   onConfirm: (dataUrl: string) => void;
@@ -37,19 +37,15 @@ export const PhotoFrameEditor: React.FC<PhotoFrameEditorProps> = ({ onConfirm, i
 
   useEffect(() => {
     const pUrl = sessionStorage.getItem('capturedImage') || '';
-    const fId = sessionStorage.getItem('selectedFrame') || '';
     setPhotoUrl(pUrl);
     
-    if (fId && FRAMES[fId]) {
-      const config = FRAMES[fId];
-      setFrameConfig(config);
+    setFrameConfig(DEFAULT_EVENT_FRAME);
 
-      const img = new Image();
-      img.onload = () => {
-        setFrameSize({ width: img.naturalWidth, height: img.naturalHeight });
-      };
-      img.src = config.image;
-    }
+    const img = new Image();
+    img.onload = () => {
+      setFrameSize({ width: img.naturalWidth, height: img.naturalHeight });
+    };
+    img.src = DEFAULT_EVENT_FRAME.image;
   }, []);
 
   useEffect(() => {

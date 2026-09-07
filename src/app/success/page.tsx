@@ -55,8 +55,14 @@ export default function SuccessPage() {
           
           <div className="flex flex-col gap-3 mt-4">
             <button 
-              onClick={handleDownload} 
+              onClick={() => router.push('/capture')} 
               className="w-full py-4 text-lg font-display font-semibold text-white bg-brand-primary rounded-full shadow-[0_4px_14px_rgba(85,139,47,0.3)] transition-all duration-200 hover:brightness-110 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-primary/50 flex items-center justify-center gap-2"
+            >
+              📸 Tirar outra foto
+            </button>
+            <button 
+              onClick={handleDownload} 
+              className="w-full py-4 text-lg font-display font-semibold text-brand-primary bg-brand-primary/10 rounded-full transition-all duration-200 hover:bg-brand-primary/20 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-primary/50 flex items-center justify-center gap-2"
             >
               ↓ Baixar Foto
             </button>
