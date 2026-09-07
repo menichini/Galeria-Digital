@@ -11,6 +11,26 @@ const loadImage = (src: string): Promise<HTMLImageElement> =>
     img.src = src;
   });
 
+export async function compressPhotoBeforeProcess(dataUrl: string): Promise<string> {
+  const img = await loadImage(dataUrl);
+  
+  const MAX_DIM = 1500;
+  if (img.width <= MAX_DIM && img.height <= MAX_DIM) {
+    return dataUrl; // Already small enough
+  }
+
+  const scale = Math.min(MAX_DIM / img.width, MAX_DIM / img.height);
+  const canvas = document.createElement('canvas');
+  canvas.width = img.width * scale;
+  canvas.height = img.height * scale;
+  
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Failed to get canvas context');
+  
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  return canvas.toDataURL('image/jpeg', 0.85);
+}
+
 export async function autoComposePhoto(photoUrl: string, frameConfig: FrameConfig): Promise<string> {
   const [photoImg, frameImg] = await Promise.all([
     loadImage(photoUrl),
@@ -72,7 +92,7 @@ export async function autoComposePhoto(photoUrl: string, frameConfig: FrameConfi
   ctx.globalCompositeOperation = 'source-over';
 
   // Downscale if too large to save memory/upload time
-  const MAX_DIM = 1200;
+  const MAX_DIM = 1000;
   let finalDataUrl = '';
   
   if (canvas.width > MAX_DIM || canvas.height > MAX_DIM) {
@@ -84,9 +104,9 @@ export async function autoComposePhoto(photoUrl: string, frameConfig: FrameConfi
     if (ectx) {
       ectx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
     }
-    finalDataUrl = exportCanvas.toDataURL('image/jpeg', 0.85);
+    finalDataUrl = exportCanvas.toDataURL('image/jpeg', 0.8);
   } else {
-    finalDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+    finalDataUrl = canvas.toDataURL('image/jpeg', 0.8);
   }
 
   return finalDataUrl;

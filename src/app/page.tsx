@@ -4,7 +4,7 @@ import Image from 'next/image';
 export default function Home() {
   return (
     <main className="animate-in flex flex-col items-center min-h-screen bg-bg-main">
-      <div className="relative w-full max-w-[600px] shadow-md border-b-[6px] border-white bg-bg-main overflow-hidden">
+      <div className="relative w-full max-w-[600px] shadow-md bg-bg-main overflow-hidden">
         <Image
           src="/fotosite.png"
           alt="Fazendinha do Martin - 2 anos"

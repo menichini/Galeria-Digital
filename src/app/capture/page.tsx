@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { CameraCapture } from '../../components/CameraCapture';
 import { QuickPreview } from '../../components/QuickPreview';
 import { DEFAULT_EVENT_FRAME } from '../../config/frames';
-import { autoComposePhoto } from '../../lib/image-utils';
+import { autoComposePhoto, compressPhotoBeforeProcess } from '../../lib/image-utils';
 
 type PartyModeStep = 'capture' | 'processing' | 'preview' | 'uploading';
 
@@ -20,12 +20,16 @@ export default function CapturePage() {
     const reader = new FileReader();
     reader.onload = async () => {
       if (typeof reader.result === 'string') {
-        const rawPhoto = reader.result;
-        setPhotoDataUrl(rawPhoto);
-        sessionStorage.setItem('capturedImage', rawPhoto);
-
         try {
-          const composed = await autoComposePhoto(rawPhoto, DEFAULT_EVENT_FRAME);
+          const rawPhoto = reader.result;
+          
+          // Comprimir imediatamente para evitar estourar o limite de 5MB do sessionStorage
+          const compressedPhoto = await compressPhotoBeforeProcess(rawPhoto);
+          
+          setPhotoDataUrl(compressedPhoto);
+          sessionStorage.setItem('capturedImage', compressedPhoto);
+
+          const composed = await autoComposePhoto(compressedPhoto, DEFAULT_EVENT_FRAME);
           setComposedDataUrl(composed);
           setStep('preview');
         } catch (e) {
