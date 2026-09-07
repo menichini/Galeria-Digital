@@ -15,7 +15,7 @@ export default function GalleryPage() {
 
   const fetchFiles = async () => {
     try {
-      const res = await fetch('/api/public/list');
+      const res = await fetch('/api/public/list', { cache: 'no-store' });
       const data = await res.json();
       setFiles(data.files || []);
     } catch (e) {

@@ -6,6 +6,8 @@ const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const pacifico = Pacifico({ weight: '400', subsets: ['latin'], variable: '--font-pacifico' });
 
+import HomeButton from '../components/HomeButton';
+
 export const metadata = {
   title: 'Fazendinha do Martin',
   description: 'Galeria digital do aniversário do Martin',
@@ -20,6 +22,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="pt-BR">
       <body className={`${inter.variable} ${outfit.variable} ${pacifico.variable}`}>
         {/* We removed the ugly nav to allow a clean full-screen mobile experience */}
+        <HomeButton />
         <div className="app-container">
           {children}
         </div>

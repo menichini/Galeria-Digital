@@ -10,14 +10,12 @@ export type FrameConfig = {
 };
 
 export const FRAMES: Record<string, FrameConfig> = {
-  'martin-1': {
-    id: 'martin-1',
-    image: '/frames/frame_martin.jpg',
+  'martin-final': {
+    id: 'martin-final',
+    image: '/frames/moldura_martin_final.png',
     cropArea: {
-      // Calibragem para frame_martin.jpg:
-      // Inicia em 22% do topo (abaixo da placa "Fazendinha do Martin")
-      // Inicia em 10% da esquerda e possui 80% de largura (deixando 10% na direita)
-      // A altura é 58%, o que faz ir do 22% até 80%, sobrando 20% no fundo para o menino e os animais.
+      // Ajuste para a nova moldura em formato PNG com buraco vazado
+      // Como a arte tem proporção parecida, mantemos valores muito próximos.
       x: 0.10,
       y: 0.22,
       width: 0.80,

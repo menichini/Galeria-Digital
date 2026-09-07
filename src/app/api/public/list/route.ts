@@ -22,5 +22,14 @@ export async function GET() {
     createdAt: photo.created_at
   }));
 
-  return NextResponse.json({ files });
+  return NextResponse.json(
+    { files }, 
+    { 
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      } 
+    }
+  );
 }
