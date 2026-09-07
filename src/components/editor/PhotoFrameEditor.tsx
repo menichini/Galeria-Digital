@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FramePreview } from './FramePreview';
 import { PhotoControls } from './PhotoControls';
 import { usePhotoTransform } from '../../hooks/usePhotoTransform';
@@ -157,8 +157,8 @@ export const PhotoFrameEditor: React.FC<PhotoFrameEditorProps> = ({ onConfirm, i
   const frameAspectRatio = frameSize.width / frameSize.height;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', alignItems: 'center', width: '100%' }}>
-      <div style={{ width: '100%', maxWidth: '400px' }}>
+    <div className="flex flex-col gap-6 items-center w-full">
+      <div className="w-full max-w-[400px]">
         <FramePreview
           photoSrc={photoUrl}
           frameSrc={frameConfig.image}
@@ -188,11 +188,11 @@ export const PhotoFrameEditor: React.FC<PhotoFrameEditorProps> = ({ onConfirm, i
         disabled={isUploading}
       />
 
-      <div style={{ width: '100%', maxWidth: '400px' }}>
+      <div className="w-full max-w-[400px] mt-2">
         <button 
           onClick={handleExport} 
           disabled={isUploading} 
-          className="btn btn-primary"
+          className="w-full py-4 text-xl font-display font-semibold text-white bg-brand-primary rounded-full shadow-[0_4px_14px_rgba(85,139,47,0.3)] transition-all duration-200 hover:brightness-110 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-primary/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:brightness-100"
         >
           {isUploading ? 'Enviando...' : 'Finalizar e Enviar 🎉'}
         </button>

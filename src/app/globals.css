@@ -1,6 +1,8 @@
-@layer reset, base, theme, components, utilities;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@layer theme {
+@layer base {
   :root {
     color-scheme: light dark;
 

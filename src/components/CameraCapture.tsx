@@ -10,8 +10,7 @@ interface CameraCaptureProps {
 
 /**
  * Component allowing the user to either capture a photo via the device native camera
- * or upload an existing image from the file system. Two distinct buttons are
- * presented: "Abrir Câmera" and "Selecionar Foto".
+ * or upload an existing image from the file system.
  */
 export const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -35,12 +34,12 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture }) => {
   };
 
   return (
-    <div className="camera-capture glass-card animate-in">
+    <div className="flex flex-col gap-4 w-full">
       <input
         type="file"
         accept="image/*"
         ref={fileInputRef}
-        style={{ display: 'none' }}
+        className="hidden"
         onChange={handleFileChange}
       />
       <input
@@ -48,14 +47,14 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture }) => {
         accept="image/*"
         capture="environment"
         ref={cameraInputRef}
-        style={{ display: 'none' }}
+        className="hidden"
         onChange={handleFileChange}
       />
 
       <button
         type="button"
         onClick={handleCameraClick}
-        className="btn btn-primary"
+        className="w-full py-4 px-6 text-xl font-display font-semibold text-white bg-brand-primary rounded-full shadow-[0_4px_14px_rgba(85,139,47,0.3)] transition-all duration-200 hover:brightness-110 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-primary/50 flex items-center justify-center gap-3"
       >
         📸 Abrir Câmera
       </button>
@@ -63,7 +62,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture }) => {
       <button
         type="button"
         onClick={handleUploadClick}
-        className="btn btn-secondary"
+        className="w-full py-4 px-6 text-lg font-display font-semibold text-text-muted bg-transparent border-2 border-text-muted rounded-full transition-all duration-200 hover:bg-black/5 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-text-muted/50 flex items-center justify-center gap-3"
       >
         🖼️ Selecionar Foto
       </button>

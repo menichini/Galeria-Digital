@@ -33,9 +33,19 @@ export default function PreviewPage() {
   };
 
   return (
-    <main className="animate-in" style={{ padding: '2rem', textAlign: 'center' }}>
-      <h1 style={{ marginBottom: '1.5rem', fontSize: '2rem' }}>Ajuste sua Foto</h1>
-      <PhotoFrameEditor onConfirm={handleConfirm} isUploading={isUploading} />
+    <main className="animate-in flex flex-col items-center min-h-screen px-4 pt-16 pb-10 w-full">
+      <div className="w-full max-w-[500px] flex flex-col items-center">
+        <div className="text-center mb-6">
+          <h1 className="text-3xl md:text-4xl font-display font-bold text-brand-primary mb-2">
+            Ajuste sua Foto
+          </h1>
+          <p className="text-sm md:text-base text-text-muted font-medium">
+            Mova, gire e dê zoom para encaixar perfeitamente.
+          </p>
+        </div>
+        
+        <PhotoFrameEditor onConfirm={handleConfirm} isUploading={isUploading} />
+      </div>
     </main>
   );
 }

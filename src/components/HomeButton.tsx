@@ -13,35 +13,9 @@ export default function HomeButton() {
   return (
     <button
       onClick={() => router.push('/')}
-      style={{
-        position: 'fixed',
-        top: '1rem',
-        left: '1rem',
-        zIndex: 1000,
-        background: 'rgba(255, 255, 255, 0.2)',
-        backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(255, 255, 255, 0.3)',
-        borderRadius: '50px',
-        padding: '0.5rem 1rem',
-        color: '#fff',
-        fontWeight: '500',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-        transition: 'all 0.2s ease',
-      }}
-      onMouseOver={(e) => {
-        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
-        e.currentTarget.style.transform = 'scale(1.05)';
-      }}
-      onMouseOut={(e) => {
-        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-        e.currentTarget.style.transform = 'scale(1)';
-      }}
+      className="fixed top-4 left-4 z-[1000] bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 rounded-full px-4 py-2 text-text-main font-medium cursor-pointer flex items-center gap-2 shadow-sm transition-all duration-200 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-primary/50"
     >
-      <span style={{ fontSize: '1.2rem' }}>🏠</span>
+      <span className="text-xl">🏠</span>
       Início
     </button>
   );

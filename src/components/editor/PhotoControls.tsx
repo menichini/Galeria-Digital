@@ -26,26 +26,26 @@ export const PhotoControls: React.FC<PhotoControlsProps> = ({
   disabled
 }) => {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '400px', margin: '0 auto', opacity: disabled ? 0.5 : 1, pointerEvents: disabled ? 'none' : 'auto' }}>
-      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
-        <button className="btn btn-ghost" style={{ flex: 1, padding: '0.5rem', fontSize: '0.9rem' }} onClick={onFit}>Ajustar</button>
-        <button className="btn btn-ghost" style={{ flex: 1, padding: '0.5rem', fontSize: '0.9rem' }} onClick={onFill}>Preencher</button>
-        <button className="btn btn-ghost" style={{ flex: 1, padding: '0.5rem', fontSize: '0.9rem' }} onClick={onCenter}>Centro</button>
+    <div className={`flex flex-col gap-4 w-full max-w-[400px] mx-auto transition-opacity duration-300 ${disabled ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+      <div className="flex gap-2 justify-center">
+        <button className="flex-1 py-2 px-2 text-sm font-semibold text-brand-primary bg-brand-primary/10 rounded-full hover:bg-brand-primary/20 active:scale-95 transition-all focus-visible:ring-2 focus-visible:ring-brand-primary/50" onClick={onFit}>Ajustar</button>
+        <button className="flex-1 py-2 px-2 text-sm font-semibold text-brand-primary bg-brand-primary/10 rounded-full hover:bg-brand-primary/20 active:scale-95 transition-all focus-visible:ring-2 focus-visible:ring-brand-primary/50" onClick={onFill}>Preencher</button>
+        <button className="flex-1 py-2 px-2 text-sm font-semibold text-brand-primary bg-brand-primary/10 rounded-full hover:bg-brand-primary/20 active:scale-95 transition-all focus-visible:ring-2 focus-visible:ring-brand-primary/50" onClick={onCenter}>Centro</button>
       </div>
       
-      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-        <button className="btn btn-ghost" style={{ width: '40px', height: '40px', padding: 0 }} onClick={onRotateLeft}>↺</button>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <label style={{ fontSize: '0.8rem', fontWeight: 600 }}>Rotação ({Math.round(rotation)}°)</label>
-          <input type="range" min="-180" max="180" value={rotation} onChange={(e) => onRotationChange(parseFloat(e.target.value))} style={{ width: '100%' }} />
+      <div className="flex gap-3 items-center bg-white p-3 rounded-2xl shadow-sm border border-black/5">
+        <button className="w-10 h-10 flex items-center justify-center text-xl font-bold text-text-muted hover:text-brand-primary hover:bg-brand-primary/10 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-brand-primary/50" onClick={onRotateLeft}>↺</button>
+        <div className="flex-1 flex flex-col items-center">
+          <label className="text-xs font-semibold text-text-muted mb-2">Rotação ({Math.round(rotation)}°)</label>
+          <input type="range" min="-180" max="180" value={rotation} onChange={(e) => onRotationChange(parseFloat(e.target.value))} className="w-full accent-brand-primary cursor-pointer" />
         </div>
-        <button className="btn btn-ghost" style={{ width: '40px', height: '40px', padding: 0 }} onClick={onRotateRight}>↻</button>
+        <button className="w-10 h-10 flex items-center justify-center text-xl font-bold text-text-muted hover:text-brand-primary hover:bg-brand-primary/10 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-brand-primary/50" onClick={onRotateRight}>↻</button>
       </div>
 
-      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-        <span style={{ fontWeight: 'bold' }}>-</span>
-        <input type="range" min="0.1" max="5" step="0.05" value={zoom} onChange={(e) => onZoomChange(parseFloat(e.target.value))} style={{ flex: 1 }} />
-        <span style={{ fontWeight: 'bold' }}>+</span>
+      <div className="flex gap-3 items-center bg-white p-3 rounded-2xl shadow-sm border border-black/5">
+        <span className="font-bold text-text-muted text-xl w-6 text-center select-none">-</span>
+        <input type="range" min="0.1" max="5" step="0.05" value={zoom} onChange={(e) => onZoomChange(parseFloat(e.target.value))} className="flex-1 accent-brand-primary cursor-pointer" />
+        <span className="font-bold text-text-muted text-xl w-6 text-center select-none">+</span>
       </div>
     </div>
   );

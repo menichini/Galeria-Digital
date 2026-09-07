@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import './gallery.css';
 
 interface FileItem {
   name: string;
@@ -31,47 +30,54 @@ export default function GalleryPage() {
 
   if (loading) {
     return (
-      <div className="gallery-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <div className="glass-card animate-in" style={{ textAlign: 'center' }}>
-          <h2>Carregando mural...</h2>
+      <main className="min-h-screen px-4 py-24 flex items-center justify-center w-full">
+        <div className="glass-card animate-in text-center p-8 max-w-sm w-full">
+          <h2 className="text-2xl font-display font-semibold text-brand-primary">Carregando mural...</h2>
         </div>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className="gallery-container">
-      <h1 className="gallery-title">Mural do Martin</h1>
+    <main className="min-h-screen px-4 pt-20 pb-12 w-full max-w-[1200px] mx-auto">
+      <div className="text-center mb-10">
+        <h1 className="text-4xl md:text-5xl font-display font-bold text-brand-primary mb-3">
+          🖼️ Mural do Martin
+        </h1>
+        <p className="text-lg md:text-xl text-text-muted font-medium">
+          As memórias mais divertidas da nossa fazendinha!
+        </p>
+      </div>
       
       {files.length === 0 ? (
-        <div className="glass-card animate-in" style={{ maxWidth: 400, marginInline: 'auto', textAlign: 'center' }}>
-          <p>Nenhuma foto foi tirada ainda. Seja o primeiro!</p>
+        <div className="glass-card animate-in p-8 max-w-md mx-auto text-center">
+          <p className="text-lg font-medium text-text-muted">Nenhuma foto foi tirada ainda. Seja o primeiro!</p>
         </div>
       ) : (
-        <div className="grid">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           {files.map((file, i) => (
             <div 
               key={file.name} 
-              className="card animate-in" 
+              className="group relative glass-card p-3 flex flex-col gap-3 animate-in hover:scale-[1.02] hover:z-10 hover:shadow-[0_24px_48px_rgba(0,0,0,0.12)] transition-all duration-300 cursor-pointer"
               style={{ animationDelay: `${i * 0.05}s` }}
             >
-              <div className="photo-wrapper">
+              <div className="relative w-full aspect-[3/4] overflow-hidden rounded-md bg-white border border-black/5 shadow-inner">
                 <Image 
                   src={file.url} 
                   alt="Foto da festa" 
                   fill 
-                  className="photo" 
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105" 
+                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   priority={i < 4}
                 />
               </div>
-              <div className="photo-date">
+              <div className="text-sm font-medium text-text-muted text-center">
                 {file.createdAt ? new Date(file.createdAt).toLocaleDateString('pt-BR') : 'Hoje'}
               </div>
             </div>
           ))}
         </div>
       )}
-    </div>
+    </main>
   );
 }
