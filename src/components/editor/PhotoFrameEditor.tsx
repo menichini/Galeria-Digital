@@ -26,7 +26,8 @@ export const PhotoFrameEditor: React.FC<PhotoFrameEditorProps> = ({ onConfirm, i
     setRotation,
     center,
     fit,
-    fill
+    fill,
+    reset
   } = usePhotoTransform(
     photoSize.width,
     photoSize.height,
@@ -159,11 +160,10 @@ export const PhotoFrameEditor: React.FC<PhotoFrameEditorProps> = ({ onConfirm, i
           photoSrc={photoUrl}
           frameSrc={frameConfig.image}
           transform={transform}
-          onTransformChange={(t) => {
-            setPan(t.x, t.y);
-            setZoom(t.scale);
-            setRotation(t.rotation);
-          }}
+          onPan={setPan}
+          onZoom={setZoom}
+          onRotate={setRotation}
+          onCenter={center}
           cropArea={frameConfig.cropArea}
           frameAspectRatio={frameAspectRatio}
           onPhotoLoad={(w, h) => setPhotoSize({ width: w, height: h })}
@@ -181,6 +181,7 @@ export const PhotoFrameEditor: React.FC<PhotoFrameEditorProps> = ({ onConfirm, i
         onCenter={center}
         onFit={fit}
         onFill={fill}
+        onReset={reset}
         disabled={isUploading}
       />
 

@@ -10,6 +10,7 @@ interface PhotoControlsProps {
   onCenter: () => void;
   onFit: () => void;
   onFill: () => void;
+  onReset: () => void;
   disabled?: boolean;
 }
 
@@ -23,6 +24,7 @@ export const PhotoControls: React.FC<PhotoControlsProps> = ({
   onCenter,
   onFit,
   onFill,
+  onReset,
   disabled
 }) => {
   return (
@@ -31,6 +33,7 @@ export const PhotoControls: React.FC<PhotoControlsProps> = ({
         <button className="flex-1 py-2 px-2 text-sm font-semibold text-brand-primary bg-brand-primary/10 rounded-full hover:bg-brand-primary/20 active:scale-95 transition-all focus-visible:ring-2 focus-visible:ring-brand-primary/50" onClick={onFit}>Ajustar</button>
         <button className="flex-1 py-2 px-2 text-sm font-semibold text-brand-primary bg-brand-primary/10 rounded-full hover:bg-brand-primary/20 active:scale-95 transition-all focus-visible:ring-2 focus-visible:ring-brand-primary/50" onClick={onFill}>Preencher</button>
         <button className="flex-1 py-2 px-2 text-sm font-semibold text-brand-primary bg-brand-primary/10 rounded-full hover:bg-brand-primary/20 active:scale-95 transition-all focus-visible:ring-2 focus-visible:ring-brand-primary/50" onClick={onCenter}>Centro</button>
+        <button className="flex-1 py-2 px-2 text-sm font-semibold text-brand-secondary bg-brand-secondary/10 rounded-full hover:bg-brand-secondary/20 active:scale-95 transition-all focus-visible:ring-2 focus-visible:ring-brand-secondary/50" onClick={onReset}>Resetar</button>
       </div>
       
       <div className="flex gap-3 items-center bg-white p-3 rounded-2xl shadow-sm border border-black/5">

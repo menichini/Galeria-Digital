@@ -87,12 +87,17 @@ export function usePhotoTransform(
     setTransform(prev => ({ ...prev, rotation }));
   }, []);
 
+  const reset = useCallback(() => {
+    setTransform({ x: 0, y: 0, scale: minScaleToFill, rotation: 0 });
+  }, [minScaleToFill]);
+
   return {
     transform,
     setTransform,
     center,
     fit,
     fill,
+    reset,
     setZoom,
     setPan,
     setRotation,

@@ -7,7 +7,10 @@ export interface FramePreviewProps {
   photoSrc: string;
   frameSrc: string;
   transform: TransformState;
-  onTransformChange: (t: TransformState) => void;
+  onPan: (x: number, y: number) => void;
+  onZoom: (scale: number) => void;
+  onRotate: (rotation: number) => void;
+  onCenter: () => void;
   cropArea: CropArea;
   frameAspectRatio: number;
   onPhotoLoad: (width: number, height: number) => void;
@@ -18,7 +21,10 @@ export const FramePreview: React.FC<FramePreviewProps> = ({
   photoSrc,
   frameSrc,
   transform,
-  onTransformChange,
+  onPan,
+  onZoom,
+  onRotate,
+  onCenter,
   cropArea,
   frameAspectRatio,
   onPhotoLoad,
@@ -26,6 +32,9 @@ export const FramePreview: React.FC<FramePreviewProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   
+  // Double tap logic
+  const lastTap = useRef<number>(0);
+
   useEffect(() => {
     if (!containerRef.current) return;
     const observer = new ResizeObserver(entries => {
@@ -37,12 +46,13 @@ export const FramePreview: React.FC<FramePreviewProps> = ({
     return () => observer.disconnect();
   }, [onContainerResize]);
 
+  // Using 'immediate' or fast spring to ensure 1:1 direct tracking without stuttering
   const [{ x, y, scale, rotate }, api] = useSpring(() => ({
     x: transform.x,
     y: transform.y,
     scale: transform.scale,
     rotate: transform.rotation,
-    config: { tension: 300, friction: 30 }
+    config: { tension: 400, friction: 30 } // A bit more responsive
   }));
 
   useEffect(() => {
@@ -50,23 +60,38 @@ export const FramePreview: React.FC<FramePreviewProps> = ({
       x: transform.x,
       y: transform.y,
       scale: transform.scale,
-      rotate: transform.rotation
+      rotate: transform.rotation,
+      immediate: false, // Could be true if we don't want any smoothing, but tension 400 is fast enough
     });
   }, [transform, api]);
 
   useGesture(
     {
       onDrag: ({ offset: [dx, dy] }) => {
-        onTransformChange({ ...transform, x: dx, y: dy });
+        onPan(dx, dy);
       },
-      onPinch: ({ offset: [d] }) => {
-        onTransformChange({ ...transform, scale: d });
+      onPinch: ({ offset: [d, a] }) => {
+        onZoom(d);
+        onRotate(a);
+      },
+      onPointerDown: () => {
+        const now = Date.now();
+        if (now - lastTap.current < 300) {
+          onCenter();
+          lastTap.current = 0; // Prevent triple tap issues
+        } else {
+          lastTap.current = now;
+        }
       }
     },
     {
       target: containerRef,
-      drag: { from: () => [transform.x, transform.y] },
-      pinch: { scaleBounds: { min: 0.1, max: 10 }, modifierKey: 'ctrlKey' },
+      drag: { from: () => [transform.x, transform.y], filterTaps: true },
+      pinch: { 
+        scaleBounds: { min: 0.1, max: 10 }, 
+        modifierKey: 'ctrlKey',
+        from: () => [transform.scale, transform.rotation]
+      },
       eventOptions: { passive: false }
     }
   );
