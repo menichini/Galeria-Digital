@@ -2,9 +2,9 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { CameraCapture } from '../../components/CameraCapture';
-import { QuickPreview } from '../../components/QuickPreview';
+import { PhotoFrameEditor } from '../../components/editor/PhotoFrameEditor';
 import { DEFAULT_EVENT_FRAME } from '../../config/frames';
-import { autoComposePhoto, compressPhotoBeforeProcess } from '../../lib/image-utils';
+import { compressPhotoBeforeProcess } from '../../lib/image-utils';
 
 type PartyModeStep = 'capture' | 'processing' | 'preview' | 'uploading';
 
@@ -13,7 +13,6 @@ export default function CapturePage() {
   
   const [step, setStep] = useState<PartyModeStep>('capture');
   const [photoDataUrl, setPhotoDataUrl] = useState<string | null>(null);
-  const [composedDataUrl, setComposedDataUrl] = useState<string | null>(null);
 
   const handleCapture = async (file: File) => {
     setStep('processing');
@@ -29,8 +28,6 @@ export default function CapturePage() {
           setPhotoDataUrl(compressedPhoto);
           sessionStorage.setItem('capturedImage', compressedPhoto);
 
-          const composed = await autoComposePhoto(compressedPhoto, DEFAULT_EVENT_FRAME);
-          setComposedDataUrl(composed);
           setStep('preview');
         } catch (e) {
           console.error('Auto composition failed', e);
@@ -43,8 +40,8 @@ export default function CapturePage() {
     reader.readAsDataURL(file);
   };
 
-  const handleConfirm = async () => {
-    if (!composedDataUrl || step === 'uploading') return;
+  const handleConfirm = async (finalDataUrl: string) => {
+    if (step === 'uploading') return;
     setStep('uploading');
 
     const uploadId = typeof crypto !== 'undefined' && crypto.randomUUID 
@@ -55,7 +52,7 @@ export default function CapturePage() {
       const resp = await fetch('/api/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dataUrl: composedDataUrl, uploadId }),
+        body: JSON.stringify({ dataUrl: finalDataUrl, uploadId }),
       });
       const result = await resp.json();
       if (resp.ok && result.url) {
@@ -69,18 +66,17 @@ export default function CapturePage() {
     } catch (e) {
       console.error('Erro de upload, salvando localmente:', e);
       try {
-        // import is at the top of the file via another tool call or here? Wait, I need to add the import.
         const { savePendingUpload } = await import('../../lib/offline-queue');
         await savePendingUpload({
           id: uploadId,
-          dataUrl: composedDataUrl,
+          dataUrl: finalDataUrl,
           createdAt: Date.now(),
           attempts: 0,
           status: 'pending'
         });
         
         sessionStorage.setItem('offlinePending', 'true');
-        sessionStorage.setItem('localPhotoDataUrl', composedDataUrl);
+        sessionStorage.setItem('localPhotoDataUrl', finalDataUrl);
         router.push('/success');
       } catch (dbError) {
         alert('Falha ao salvar a foto localmente. Verifique se há espaço disponível.');
@@ -96,7 +92,6 @@ export default function CapturePage() {
 
   const handleRetake = () => {
     setPhotoDataUrl(null);
-    setComposedDataUrl(null);
     setStep('capture');
   };
 
@@ -126,21 +121,12 @@ export default function CapturePage() {
           </div>
         )}
 
-        {(step === 'preview' || step === 'uploading') && composedDataUrl && (
-          <>
-            <div className="text-center mb-6">
-              <h1 className="text-3xl md:text-4xl font-display font-bold text-brand-primary mb-2">
-                ✨ Ficou linda!
-              </h1>
-            </div>
-            <QuickPreview
-              composedImage={composedDataUrl}
-              isUploading={step === 'uploading'}
-              onConfirm={handleConfirm}
-              onCustomize={handleCustomize}
-              onRetake={handleRetake}
-            />
-          </>
+        {(step === 'preview' || step === 'uploading') && photoDataUrl && (
+          <PhotoFrameEditor 
+            onConfirm={handleConfirm} 
+            onCancel={handleRetake}
+            isUploading={step === 'uploading'} 
+          />
         )}
         
         {/* Decorativo */}

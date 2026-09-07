@@ -1,20 +1,22 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-
-interface FileItem {
-  name: string;
-  url: string;
-  createdAt?: string;
-}
+import Lightbox, { FileItem } from "@/components/Lightbox";
 
 export default function GalleryPage() {
   const [files, setFiles] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const fetchFiles = async () => {
     try {
-      const res = await fetch(`/api/public/list?t=${Date.now()}`, { cache: 'no-store' });
+      const res = await fetch(`/api/public/list?t=${Date.now()}`, { 
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        }
+      });
       const data = await res.json();
       setFiles(data.files || []);
     } catch (e) {
@@ -39,7 +41,7 @@ export default function GalleryPage() {
   }
 
   return (
-    <main className="min-h-screen px-4 pt-20 pb-12 w-full max-w-[1200px] mx-auto">
+    <main className="min-h-screen px-4 pt-20 pb-12 w-full max-w-[1200px] mx-auto relative">
       <div className="text-center mb-10">
         <h1 className="text-4xl md:text-5xl font-display font-bold text-brand-primary mb-3">
           🖼️ Mural do Martin
@@ -58,6 +60,7 @@ export default function GalleryPage() {
           {files.map((file, i) => (
             <div 
               key={file.name} 
+              onClick={() => setLightboxIndex(i)}
               className="group relative glass-card p-3 flex flex-col gap-3 animate-in hover:scale-[1.02] hover:z-10 hover:shadow-[0_24px_48px_rgba(0,0,0,0.12)] transition-all duration-300 cursor-pointer"
               style={{ animationDelay: `${i * 0.05}s` }}
             >
@@ -77,6 +80,14 @@ export default function GalleryPage() {
             </div>
           ))}
         </div>
+      )}
+
+      {lightboxIndex !== null && (
+        <Lightbox 
+          files={files}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+        />
       )}
     </main>
   );

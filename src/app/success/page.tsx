@@ -148,7 +148,7 @@ export default function SuccessPage() {
             )}
 
             <button 
-              onClick={() => { router.push('/gallery'); }} 
+              onClick={() => { window.location.href = '/gallery'; }} 
               className="w-full py-4 text-lg font-display font-semibold text-brand-primary bg-white border-2 border-brand-primary/20 rounded-full transition-all duration-200 hover:bg-brand-primary/5 active:scale-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-primary/50 flex items-center justify-center gap-2"
             >
               🖼️ Ver no Mural
