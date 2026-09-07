@@ -1,113 +1,189 @@
-/* globals.css */
-:root {
-  /* Cores Temáticas da Fazendinha */
-  --color-brand-primary: #558B2F; /* Verde Fazenda */
-  --color-brand-secondary: #EF6C00; /* Laranja Abóbora */
-  --color-brand-accent: #FFD54F; /* Amarelo Sol */
-  --color-bg-light: #F9FBE7; /* Creme esverdeado claro */
-  --color-bg-card: #FFFFFF;
-  --color-text-main: #3E2723; /* Marrom escuro */
-  --color-text-muted: #795548; /* Marrom médio */
+@layer reset, base, theme, components, utilities;
 
-  /* Espaçamentos e Bordas */
-  --radius-sm: 8px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-  --radius-pill: 9999px;
+@layer theme {
+  :root {
+    color-scheme: light dark;
+
+    /* Tier 1: Literal Tokens */
+    --color-green-300: #81C784;
+    --color-green-500: #558B2F; /* Verde Fazenda Original */
+    --color-green-700: #33691E;
+    
+    --color-orange-300: #FFB74D;
+    --color-orange-500: #EF6C00; /* Laranja Abóbora */
+    --color-orange-700: #E65100;
+    
+    --color-yellow-400: #FFD54F; /* Amarelo Sol */
+    
+    --color-cream-100: #F9FBE7; /* Creme esverdeado claro */
+    --color-cream-900: #1B2114; /* Escuro esverdeado */
+    
+    --color-white: #FFFFFF;
+    --color-black: #121212;
+
+    --color-brown-200: #BCAAA4;
+    --color-brown-600: #795548; /* Marrom médio */
+    --color-brown-800: #3E2723; /* Marrom escuro */
+    --color-brown-900: #261612;
+
+    /* Tier 2: Semantic Tokens */
+    --color-brand-primary: light-dark(var(--color-green-500), var(--color-green-300));
+    --color-brand-secondary: light-dark(var(--color-orange-500), var(--color-orange-300));
+    --color-brand-accent: var(--color-yellow-400);
+
+    --color-bg-main: light-dark(var(--color-cream-100), var(--color-cream-900));
+    --color-bg-card: light-dark(rgba(255, 255, 255, 0.7), rgba(20, 25, 15, 0.7));
+    --color-border-card: light-dark(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1));
+
+    --color-text-main: light-dark(var(--color-brown-800), var(--color-cream-100));
+    --color-text-muted: light-dark(var(--color-brown-600), var(--color-brown-200));
+
+    /* Typography Sizes (clamp for responsiveness) */
+    --font-size-sm: clamp(0.8rem, 0.17vi + 0.76rem, 0.89rem);
+    --font-size-base: clamp(1rem, 0.34vi + 0.91rem, 1.19rem);
+    --font-size-md: clamp(1.25rem, 0.61vi + 1.1rem, 1.58rem);
+    --font-size-lg: clamp(1.56rem, 1vi + 1.31rem, 2.11rem);
+    --font-size-xl: clamp(1.95rem, 1.56vi + 1.56rem, 2.81rem);
+    --font-size-2xl: clamp(2.44rem, 2.38vi + 1.85rem, 3.75rem);
+
+    /* Radii */
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-pill: 9999px;
+    
+    /* Spacing */
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+  }
+}
+
+@layer reset {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
   
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  img, picture, video, canvas, svg {
+    display: block;
+    max-inline-size: 100%;
+  }
 }
 
-html, body {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-inter), system-ui, sans-serif;
-  background-color: var(--color-bg-light);
-  color: var(--color-text-main);
-  /* Previne pull-to-refresh no mobile (iOS/Android) */
-  overscroll-behavior-y: none; 
+@layer base {
+  html, body {
+    font-family: var(--font-inter), system-ui, sans-serif;
+    background-color: var(--color-bg-main);
+    color: var(--color-text-main);
+    overscroll-behavior-y: none;
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-outfit), sans-serif;
+    font-weight: 700;
+    margin-block-end: var(--spacing-md);
+    color: var(--color-brand-primary);
+    text-wrap: balance;
+    line-height: 1.1;
+  }
+
+  h1 { font-size: var(--font-size-2xl); margin-block-end: var(--spacing-lg); }
+  h2 { font-size: var(--font-size-xl); }
+  h3 { font-size: var(--font-size-lg); }
+  h4 { font-size: var(--font-size-md); }
 }
 
-*, *::before, *::after {
-  box-sizing: inherit;
+@layer components {
+  .app-container {
+    min-block-size: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-md);
+    max-inline-size: 900px;
+    margin-inline: auto; 
+  }
+
+  /* Glassmorphism Cards */
+  .glass-card {
+    background: var(--color-bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border-card);
+    padding: var(--spacing-lg);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Botões modernos */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-outfit), sans-serif;
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    padding-block: 1rem;
+    padding-inline: 1.5rem;
+    border-radius: var(--radius-pill);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, filter 0.2s ease;
+    inline-size: 100%;
+    margin-block-end: var(--spacing-sm);
+  }
+
+  .btn:active {
+    transform: scale(0.95);
+  }
+
+  .btn:hover:not(:disabled) {
+    filter: brightness(1.1);
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--color-brand-primary);
+    outline-offset: 4px;
+  }
+
+  .btn-primary {
+    background-color: var(--color-brand-primary);
+    color: var(--color-white);
+    box-shadow: 0 4px 14px rgba(85, 139, 47, 0.3);
+  }
+
+  .btn-secondary {
+    background-color: var(--color-brand-secondary);
+    color: var(--color-white);
+    box-shadow: 0 4px 14px rgba(239, 108, 0, 0.3);
+  }
+
+  .btn-ghost {
+    background-color: transparent;
+    color: var(--color-text-muted);
+    border: 2px solid var(--color-text-muted);
+  }
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-outfit), sans-serif;
-  font-weight: 700;
-  margin: 0 0 var(--spacing-md) 0;
-  color: var(--color-brand-primary);
-}
+@layer utilities {
+  @keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-.app-container {
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  padding: var(--spacing-md);
-  max-width: 500px;
-  margin: 0 auto; /* Centraliza no desktop */
-}
-
-/* Base Components */
-.glass-card {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  padding: var(--spacing-lg);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-}
-
-/* Botões */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-outfit), sans-serif;
-  font-weight: 600;
-  font-size: 1.1rem;
-  padding: 1rem 1.5rem;
-  border-radius: var(--radius-pill);
-  border: none;
-  cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
-  width: 100%; /* Mobile first */
-  margin-bottom: var(--spacing-sm);
-}
-
-.btn:active {
-  transform: scale(0.95);
-}
-
-.btn-primary {
-  background-color: var(--color-brand-primary);
-  color: #FFFFFF;
-  box-shadow: 0 4px 14px rgba(85, 139, 47, 0.3);
-}
-
-.btn-secondary {
-  background-color: var(--color-brand-secondary);
-  color: #FFFFFF;
-  box-shadow: 0 4px 14px rgba(239, 108, 0, 0.3);
-}
-
-.btn-ghost {
-  background-color: transparent;
-  color: var(--color-text-muted);
-  border: 2px solid var(--color-text-muted);
-}
-
-/* Animations */
-@keyframes slideUpFade {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-in {
-  animation: slideUpFade 0.5s ease-out forwards;
+  .animate-in {
+    animation: slideUpFade 0.5s ease-out forwards;
+  }
 }

@@ -1,33 +1,52 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
-import { verifyAdminToken } from '@/lib/jwt';
+import { supabaseAdmin } from '@/lib/supabase';
+import { cookies } from 'next/headers';
 
 export async function DELETE(request: Request) {
-  // Authenticate admin via Bearer token
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  const cookieStore = cookies();
+  const token = cookieStore.get('adminToken');
+  if (!token?.value) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-  const token = authHeader.split(' ')[1];
-  const payload = verifyAdminToken(token);
-  if (!payload) {
-    return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
-  const fileName = searchParams.get('file');
+  const id = searchParams.get('id');
 
-  if (!fileName) {
-    return NextResponse.json({ error: 'Missing file parameter' }, { status: 400 });
+  if (!id) {
+    return NextResponse.json({ error: 'Missing id parameter' }, { status: 400 });
   }
 
-  const { error } = await supabase.storage.from('fotos').remove([fileName]);
+  // First, get the photo URL to extract the filename
+  const { data: photoData, error: fetchError } = await supabaseAdmin
+    .from('photos')
+    .select('image_url')
+    .eq('id', id)
+    .single();
 
-  if (error) {
-    console.error('Supabase delete error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (fetchError || !photoData) {
+    return NextResponse.json({ error: 'Photo not found' }, { status: 404 });
+  }
+
+  const imageUrl = photoData.image_url;
+  // Extract filename from URL: .../storage/v1/object/public/fotos/photo_123.jpg
+  const urlParts = imageUrl.split('/');
+  const fileName = urlParts[urlParts.length - 1];
+
+  // Delete from storage
+  if (fileName) {
+    await supabaseAdmin.storage.from('fotos').remove([fileName]);
+  }
+
+  // Delete from database
+  const { error: dbError } = await supabaseAdmin
+    .from('photos')
+    .delete()
+    .eq('id', id);
+
+  if (dbError) {
+    console.error('Supabase delete error:', dbError);
+    return NextResponse.json({ error: dbError.message }, { status: 500 });
   }
 
   return NextResponse.json({ success: true });
 }
-

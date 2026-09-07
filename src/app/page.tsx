@@ -8,7 +8,7 @@ export default function Home() {
         style={{
           width: '100%',
           height: '250px',
-          backgroundImage: 'url(/farm-hero.jpg)',
+          backgroundImage: 'url(/frame.jpeg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           borderRadius: '0 0 var(--radius-lg) var(--radius-lg)',
@@ -20,7 +20,7 @@ export default function Home() {
           position: 'absolute',
           bottom: 0, left: 0, right: 0,
           height: '80px',
-          background: 'linear-gradient(to top, var(--color-bg-light) 10%, transparent)'
+          background: 'linear-gradient(to top, var(--color-bg-main) 10%, transparent)'
         }} />
       </div>
 

@@ -29,21 +29,41 @@ export default function GalleryPage() {
     fetchFiles();
   }, []);
 
-  if (loading) return <div className="glass-card" style={{ margin: '3rem auto', maxWidth: 400, textAlign: 'center' }}><h2>Carregando mural...</h2></div>;
+  if (loading) {
+    return (
+      <div className="gallery-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div className="glass-card animate-in" style={{ textAlign: 'center' }}>
+          <h2>Carregando mural...</h2>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="gallery-container">
       <h1 className="gallery-title">Mural do Martin</h1>
+      
       {files.length === 0 ? (
-        <div className="glass-card" style={{ margin: '3rem auto', maxWidth: 400, textAlign: 'center' }}>
+        <div className="glass-card animate-in" style={{ maxWidth: 400, marginInline: 'auto', textAlign: 'center' }}>
           <p>Nenhuma foto foi tirada ainda. Seja o primeiro!</p>
         </div>
       ) : (
         <div className="grid">
-          {files.map((file) => (
-            <div key={file.name} className="card">
+          {files.map((file, i) => (
+            <div 
+              key={file.name} 
+              className="card animate-in" 
+              style={{ animationDelay: `${i * 0.05}s` }}
+            >
               <div className="photo-wrapper">
-                <Image src={file.url} alt="Foto da festa" fill className="photo" sizes="(max-width: 768px) 100vw, 300px" />
+                <Image 
+                  src={file.url} 
+                  alt="Foto da festa" 
+                  fill 
+                  className="photo" 
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  priority={i < 4}
+                />
               </div>
               <div className="photo-date">
                 {file.createdAt ? new Date(file.createdAt).toLocaleDateString('pt-BR') : 'Hoje'}

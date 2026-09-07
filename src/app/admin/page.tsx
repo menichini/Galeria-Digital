@@ -60,6 +60,24 @@ export default function AdminPage() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (!confirm("Tem certeza que deseja remover esta foto permanentemente?")) return;
+    
+    try {
+      const res = await fetch(`/api/admin/delete?id=${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (res.ok) {
+        setFiles(prev => prev.filter(f => f.id !== id));
+      } else {
+        alert('Erro ao remover foto.');
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   if (loading) return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'var(--color-background)' }}>
       <h2>Carregando Painel...</h2>
@@ -122,6 +140,13 @@ export default function AdminPage() {
                   onClick={() => handleToggle(file.id, file.isApproved)}
                 >
                   {file.isApproved ? '🚫 Ocultar' : '✅ Aprovar'}
+                </button>
+                <button 
+                  className="btn btn-ghost" 
+                  onClick={() => handleDelete(file.id)}
+                  style={{ color: '#dc3545', borderColor: '#dc3545' }}
+                >
+                  🗑️ Remover
                 </button>
               </div>
             </div>
