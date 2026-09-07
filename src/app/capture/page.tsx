@@ -47,24 +47,45 @@ export default function CapturePage() {
     if (!composedDataUrl || step === 'uploading') return;
     setStep('uploading');
 
+    const uploadId = typeof crypto !== 'undefined' && crypto.randomUUID 
+      ? crypto.randomUUID() 
+      : Date.now().toString() + Math.floor(Math.random() * 1000);
+
     try {
       const resp = await fetch('/api/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dataUrl: composedDataUrl }),
+        body: JSON.stringify({ dataUrl: composedDataUrl, uploadId }),
       });
       const result = await resp.json();
-      if (result.url) {
+      if (resp.ok && result.url) {
         sessionStorage.setItem('uploadedUrl', result.url);
+        sessionStorage.removeItem('offlinePending');
+        sessionStorage.removeItem('localPhotoDataUrl');
         router.push('/success');
       } else {
-        alert('Erro ao enviar a foto: ' + (result.error || 'Erro desconhecido.'));
-        setStep('preview');
+        throw new Error(result.error || 'Erro desconhecido.');
       }
     } catch (e) {
-      console.error(e);
-      alert('Falha na comunicação com o servidor.');
-      setStep('preview');
+      console.error('Erro de upload, salvando localmente:', e);
+      try {
+        // import is at the top of the file via another tool call or here? Wait, I need to add the import.
+        const { savePendingUpload } = await import('../../lib/offline-queue');
+        await savePendingUpload({
+          id: uploadId,
+          dataUrl: composedDataUrl,
+          createdAt: Date.now(),
+          attempts: 0,
+          status: 'pending'
+        });
+        
+        sessionStorage.setItem('offlinePending', 'true');
+        sessionStorage.setItem('localPhotoDataUrl', composedDataUrl);
+        router.push('/success');
+      } catch (dbError) {
+        alert('Falha ao salvar a foto localmente. Verifique se há espaço disponível.');
+        setStep('preview');
+      }
     }
   };
 

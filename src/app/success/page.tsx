@@ -6,15 +6,20 @@ import Image from 'next/image';
 export default function SuccessPage() {
   const router = useRouter();
   const [url, setUrl] = useState<string>('');
+  const [isOfflinePending, setIsOfflinePending] = useState(false);
   const [shareState, setShareState] = useState<'idle' | 'preparing' | 'sharing'>('idle');
 
   useEffect(() => {
     const uploaded = sessionStorage.getItem('uploadedUrl') || '';
-    if (!uploaded) {
+    const offlineFlag = sessionStorage.getItem('offlinePending') === 'true';
+    const localDataUrl = sessionStorage.getItem('localPhotoDataUrl') || '';
+
+    if (!uploaded && !offlineFlag) {
       // Se não houver URL, redireciona para a captura
       router.replace('/capture');
     } else {
-      setUrl(uploaded);
+      setIsOfflinePending(offlineFlag);
+      setUrl(offlineFlag ? localDataUrl : uploaded);
     }
   }, [router]);
 
@@ -87,6 +92,8 @@ export default function SuccessPage() {
   const handleRetakePhoto = () => {
     sessionStorage.removeItem('capturedImage');
     sessionStorage.removeItem('uploadedUrl');
+    sessionStorage.removeItem('offlinePending');
+    sessionStorage.removeItem('localPhotoDataUrl');
     router.push('/capture');
   };
 
@@ -95,12 +102,25 @@ export default function SuccessPage() {
   return (
     <main className="animate-in flex flex-col items-center justify-center min-h-screen px-4 py-12 w-full">
       <div className="text-center mb-8">
-        <h1 className="text-4xl md:text-5xl font-display font-bold text-brand-primary mb-3">
-          🎉 Ficou Demais!
-        </h1>
-        <p className="text-lg md:text-xl text-text-muted font-medium">
-          Sua foto já está salva no Mural da Fazendinha.
-        </p>
+        {isOfflinePending ? (
+          <>
+            <h1 className="text-3xl md:text-4xl font-display font-bold text-brand-primary mb-3 leading-tight">
+              Sua foto está salva neste aparelho 💚
+            </h1>
+            <p className="text-base md:text-lg text-text-muted font-medium">
+              Vamos tentar enviar novamente assim que a conexão melhorar.
+            </p>
+          </>
+        ) : (
+          <>
+            <h1 className="text-4xl md:text-5xl font-display font-bold text-brand-primary mb-3">
+              🎉 Ficou Demais!
+            </h1>
+            <p className="text-lg md:text-xl text-text-muted font-medium">
+              Sua foto já está salva no Mural da Fazendinha.
+            </p>
+          </>
+        )}
       </div>
       
       {url && (
