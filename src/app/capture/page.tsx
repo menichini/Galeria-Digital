@@ -10,7 +10,7 @@ type PartyModeStep = 'capture' | 'processing' | 'preview' | 'uploading';
 
 export default function CapturePage() {
   const router = useRouter();
-  
+
   const [step, setStep] = useState<PartyModeStep>('capture');
   const [photoDataUrl, setPhotoDataUrl] = useState<string | null>(null);
 
@@ -21,10 +21,10 @@ export default function CapturePage() {
       if (typeof reader.result === 'string') {
         try {
           const rawPhoto = reader.result;
-          
+
           // Comprimir imediatamente para evitar estourar o limite de 5MB do sessionStorage
           const compressedPhoto = await compressPhotoBeforeProcess(rawPhoto);
-          
+
           setPhotoDataUrl(compressedPhoto);
           sessionStorage.setItem('capturedImage', compressedPhoto);
 
@@ -44,8 +44,8 @@ export default function CapturePage() {
     if (step === 'uploading') return;
     setStep('uploading');
 
-    const uploadId = typeof crypto !== 'undefined' && crypto.randomUUID 
-      ? crypto.randomUUID() 
+    const uploadId = typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
       : Date.now().toString() + Math.floor(Math.random() * 1000);
 
     try {
@@ -74,7 +74,7 @@ export default function CapturePage() {
           attempts: 0,
           status: 'pending'
         });
-        
+
         sessionStorage.setItem('offlinePending', 'true');
         sessionStorage.setItem('localPhotoDataUrl', finalDataUrl);
         router.push('/success');
@@ -122,13 +122,13 @@ export default function CapturePage() {
         )}
 
         {(step === 'preview' || step === 'uploading') && photoDataUrl && (
-          <PhotoFrameEditor 
-            onConfirm={handleConfirm} 
+          <PhotoFrameEditor
+            onConfirm={handleConfirm}
             onCancel={handleRetake}
-            isUploading={step === 'uploading'} 
+            isUploading={step === 'uploading'}
           />
         )}
-        
+
         {/* Decorativo */}
         <div className="mt-12 opacity-80 select-none pointer-events-none">
           <div className="text-4xl flex gap-6 justify-center">
