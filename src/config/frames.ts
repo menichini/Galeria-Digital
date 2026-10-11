@@ -15,8 +15,6 @@ export const DEFAULT_EVENT_FRAME: FrameConfig = {
   image: '/frames/moldura_martin_final.png',
   defaultFrame: true,
   cropArea: {
-    // Ajuste para a nova moldura em formato PNG com buraco vazado
-    // Como a arte tem proporção parecida, mantemos valores muito próximos.
     x: 0.10,
     y: 0.22,
     width: 0.80,
@@ -24,7 +22,19 @@ export const DEFAULT_EVENT_FRAME: FrameConfig = {
   },
 };
 
-// Mantido apenas por compatibilidade com códigos antigos, mas aponta para o único frame.
+export const OLGA_EVENT_FRAME: FrameConfig = {
+  id: 'olga-final',
+  image: '/frames/Moldura-Cha-de-Bebe-da-Olga.png',
+  defaultFrame: true,
+  cropArea: {
+    x: 0.16,
+    y: 0.18,
+    width: 0.71,
+    height: 0.52,
+  },
+};
+
 export const FRAMES: Record<string, FrameConfig> = {
   [DEFAULT_EVENT_FRAME.id]: DEFAULT_EVENT_FRAME,
+  [OLGA_EVENT_FRAME.id]: OLGA_EVENT_FRAME,
 };

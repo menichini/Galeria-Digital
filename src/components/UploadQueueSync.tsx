@@ -36,7 +36,12 @@ export function UploadQueueSync() {
           const resp = await fetch('/api/upload', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ dataUrl: item.dataUrl, uploadId: item.id }),
+            body: JSON.stringify({
+              dataUrl: item.dataUrl,
+              uploadId: item.id,
+              eventId: item.eventId,
+              frameId: item.frameId,
+            }),
           });
           
           if (resp.ok) {

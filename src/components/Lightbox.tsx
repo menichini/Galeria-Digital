@@ -12,9 +12,10 @@ interface LightboxProps {
   files: FileItem[];
   initialIndex: number;
   onClose: () => void;
+  eventTitle?: string;
 }
 
-export default function Lightbox({ files, initialIndex, onClose }: LightboxProps) {
+export default function Lightbox({ files, initialIndex, onClose, eventTitle = "Mural da Festa" }: LightboxProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
@@ -80,7 +81,7 @@ export default function Lightbox({ files, initialIndex, onClose }: LightboxProps
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Mural do Martin",
+          title: eventTitle,
           text: "Olha essa foto!",
           url: file.url,
         });

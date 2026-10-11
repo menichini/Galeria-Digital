@@ -4,18 +4,19 @@ import { cookies } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
 
-// Em produção, deveria importar e validar o token com jwt/jose
-// Mas para o MVP simplificado, apenas verificamos se o cookie existe
 function isAuthenticated() {
   const cookieStore = cookies();
   const token = cookieStore.get('adminToken');
   return !!token?.value;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   if (!isAuthenticated()) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  const { searchParams } = new URL(request.url);
+  const filterEvent = searchParams.get('event'); // 'all', 'martin', or 'olga'
 
   // List all photos from the database (both approved and pending/rejected)
   const { data, error } = await supabaseAdmin
@@ -28,13 +29,23 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const files = data.map((photo) => ({
-    id: photo.id,
-    name: `Foto ${photo.id.substring(0, 8)}`,
-    url: photo.image_url,
-    createdAt: photo.created_at,
-    isApproved: photo.is_approved
-  }));
+  let files = data.map((photo) => {
+    const isOlga = photo.event_id === 'olga' || photo.frame_id === 'olga-final' || photo.frame_id === 'olga' || photo.image_url?.includes('olga_');
+    const eventId = isOlga ? 'olga' : 'martin';
+
+    return {
+      id: photo.id,
+      name: `Foto ${photo.id.substring(0, 8)}`,
+      url: photo.image_url,
+      createdAt: photo.created_at,
+      isApproved: photo.is_approved,
+      eventId,
+    };
+  });
+
+  if (filterEvent && filterEvent !== 'all') {
+    files = files.filter((f) => f.eventId === filterEvent);
+  }
 
   return NextResponse.json({ files });
 }

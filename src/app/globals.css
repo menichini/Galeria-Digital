@@ -60,6 +60,19 @@
     --spacing-lg: 24px;
     --spacing-xl: 32px;
   }
+
+  .theme-olga {
+    --color-brand-primary: #D81B60;
+    --color-brand-secondary: #EC407A;
+    --color-brand-accent: #F48FB1;
+
+    --color-bg-main: #FDEAF0;
+    --color-bg-card: rgba(255, 255, 255, 0.85);
+    --color-border-card: rgba(244, 143, 177, 0.4);
+
+    --color-text-main: #4A154B;
+    --color-text-muted: #8E24AA;
+  }
 }
 
 @layer reset {
@@ -170,6 +183,14 @@
     background-color: var(--color-brand-secondary);
     color: var(--color-white);
     box-shadow: 0 4px 14px rgba(239, 108, 0, 0.3);
+  }
+
+  .theme-olga .btn-primary {
+    box-shadow: 0 4px 14px rgba(216, 27, 96, 0.35);
+  }
+
+  .theme-olga .btn-secondary {
+    box-shadow: 0 4px 14px rgba(236, 64, 122, 0.35);
   }
 
   .btn-ghost {

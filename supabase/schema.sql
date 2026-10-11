@@ -1,13 +1,18 @@
--- Schema setup for Fazendinha do Martin (Galeria Digital)
+-- Schema setup for Galeria Digital (Multi-Event: Fazendinha do Martin & Fazendinha da Olga)
 
 -- 1. Create photos table
 CREATE TABLE IF NOT EXISTS public.photos (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
     image_url text NOT NULL,
     frame_id text,
+    event_id text DEFAULT 'martin',
     is_approved boolean DEFAULT false,
     created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+-- Migration for existing databases (run this if you already have the photos table):
+ALTER TABLE public.photos ADD COLUMN IF NOT EXISTS event_id text DEFAULT 'martin';
+CREATE INDEX IF NOT EXISTS idx_photos_event_id ON public.photos(event_id);
 
 -- Enable RLS on photos
 ALTER TABLE public.photos ENABLE ROW LEVEL SECURITY;

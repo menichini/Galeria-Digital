@@ -8,9 +8,15 @@ interface PhotoFrameEditorProps {
   onConfirm: (dataUrl: string) => void;
   onCancel?: () => void;
   isUploading: boolean;
+  frameConfig?: FrameConfig;
 }
 
-export const PhotoFrameEditor: React.FC<PhotoFrameEditorProps> = ({ onConfirm, onCancel, isUploading }) => {
+export const PhotoFrameEditor: React.FC<PhotoFrameEditorProps> = ({
+  onConfirm,
+  onCancel,
+  isUploading,
+  frameConfig: propFrameConfig,
+}) => {
   const [photoUrl, setPhotoUrl] = useState('');
   const [frameConfig, setFrameConfig] = useState<FrameConfig | null>(null);
 
@@ -44,14 +50,15 @@ export const PhotoFrameEditor: React.FC<PhotoFrameEditorProps> = ({ onConfirm, o
     const pUrl = sessionStorage.getItem('capturedImage') || '';
     setPhotoUrl(pUrl);
     
-    setFrameConfig(DEFAULT_EVENT_FRAME);
+    const activeFrame = propFrameConfig || DEFAULT_EVENT_FRAME;
+    setFrameConfig(activeFrame);
 
     const img = new Image();
     img.onload = () => {
       setFrameSize({ width: img.naturalWidth, height: img.naturalHeight });
     };
-    img.src = DEFAULT_EVENT_FRAME.image;
-  }, []);
+    img.src = activeFrame.image;
+  }, [propFrameConfig]);
 
   useEffect(() => {
     if (!isReady && photoSize.width > 0 && containerSize.width > 0 && frameSize.width > 0 && frameConfig) {

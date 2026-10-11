@@ -6,6 +6,8 @@ export type PendingUpload = {
   createdAt: number;
   attempts: number;
   status: 'pending' | 'uploading' | 'failed';
+  eventId?: string;
+  frameId?: string;
 };
 
 interface GaleriaDB extends DBSchema {

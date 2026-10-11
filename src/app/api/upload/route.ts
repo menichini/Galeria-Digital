@@ -1,20 +1,20 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase'; // Using the standard client which we'll configure below
-// Wait, we need the admin client for DB inserts bypassing RLS if needed, but since uploads are anonymous it's fine.
-// Actually, using the admin client is safer here so we don't depend on anonymous RLS for INSERTs.
+import { supabase } from '@/lib/supabase';
 import { supabaseAdmin } from '@/lib/supabase';
 
 const MAX_PAYLOAD_SIZE = 5 * 1024 * 1024; // 5MB limit
 
 export async function POST(request: Request) {
   try {
-    const { dataUrl, uploadId } = await request.json();
+    const { dataUrl, uploadId, eventId, frameId } = await request.json();
     if (!dataUrl) {
       return NextResponse.json({ error: 'dataUrl missing' }, { status: 400 });
     }
 
+    const event = eventId === 'olga' ? 'olga' : 'martin';
+    const targetFrameId = frameId || (event === 'olga' ? 'olga-final' : 'martin-final');
+
     // Security check 1: Size limit
-    // A base64 string size is approx (string.length * 3) / 4 in bytes.
     const approximateByteSize = (dataUrl.length * 3) / 4;
     if (approximateByteSize > MAX_PAYLOAD_SIZE) {
       return NextResponse.json({ error: 'Payload too large (max 5MB)' }, { status: 413 });
@@ -30,7 +30,8 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(base64Data, 'base64');
     const ext = contentType.split('/')[1];
     
-    const fileName = uploadId ? `photo_${uploadId}.${ext}` : `photo_${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
+    const prefix = event === 'olga' ? 'olga_' : 'photo_';
+    const fileName = uploadId ? `${prefix}${uploadId}.${ext}` : `${prefix}${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
     const publicUrl = supabase.storage.from('fotos').getPublicUrl(fileName).data.publicUrl;
 
     // Idempotency check: if uploadId is provided, check if it already exists in DB
@@ -59,11 +60,31 @@ export async function POST(request: Request) {
       }
     }
 
-    // Insert record into database using admin to bypass RLS for inserting if anonymous inserts are restricted
-    const { error: dbError } = await supabaseAdmin
+    // Insert record into database using admin to bypass RLS
+    // Try inserting with event_id first
+    let insertRecord: Record<string, any> = {
+      image_url: publicUrl,
+      is_approved: true,
+      frame_id: targetFrameId,
+      event_id: event,
+    };
+
+    let { error: dbError } = await supabaseAdmin
       .from('photos')
-      .insert([{ image_url: publicUrl, is_approved: true }]);
+      .insert([insertRecord]);
     
+    // If event_id column does not exist yet in table, fallback without event_id column
+    if (dbError && dbError.message && dbError.message.toLowerCase().includes('event_id')) {
+      console.warn('Column event_id not found in Supabase photos table, falling back to frame_id only:', dbError.message);
+      const fallbackRecord = {
+        image_url: publicUrl,
+        is_approved: true,
+        frame_id: targetFrameId,
+      };
+      const retryResult = await supabaseAdmin.from('photos').insert([fallbackRecord]);
+      dbError = retryResult.error;
+    }
+
     if (dbError) {
       console.error('Database insert error:', dbError);
       return NextResponse.json({ error: dbError.message }, { status: 500 });
